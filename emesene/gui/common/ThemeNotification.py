@@ -32,13 +32,13 @@ AUTHOR = 'Andrea Stagi'
 WEBSITE = 'www.emesene.org'
 
 def ThemeNotification(title, text, picture_path=None, const=None,
-                      callback=None, tooltip=None):
+                      avatarpic=None, callback=None, tooltip=None):
 
     def picture_factory(picture, const_value):
         ''' decides which theme picture to use '''
 
         if picture:
-            if(picture[:7]=="file://"):
+            if(picture[:7] == "file://"):
                 return picture
         if const_value == 'mail-received':
             return "file://" + gui.theme.image_theme.email
@@ -53,8 +53,9 @@ def ThemeNotification(title, text, picture_path=None, const=None,
 
     if const == 'message-im':
         #In this case title is contact nick
-        title = Plus.msnplus_strip(title)
-    notification = pynotify.Notification(title, text,
-                            picture_factory(picture_path, const))
+        title = Renderers.msnplus_to_plain_text(title)
+    avatarpic = picture_factory(picture_path, const)
+    avatarpic = avatarpic[7:] #Removes "file://" for xfce4-notifyd compatibility
+    notification = pynotify.Notification(title, text, avatarpic)
     notification.set_hint_string("append", "allowed")
     notification.show()
