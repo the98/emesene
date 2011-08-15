@@ -16,6 +16,10 @@
 #    along with emesene; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import pygtk
+pygtk.require('2.0')
+import gtk
+import gui
 import pynotify
 if not pynotify.init("emesene"):
     raise ImportError
@@ -29,6 +33,11 @@ DESCRIPTION = 'Wrapper around pynotify for the notification system'
 AUTHOR = 'arielj'
 WEBSITE = 'www.emesene.org'
 
+def notifclick(notification, action):
+    assert action == "default"
+    notification.close()
+#    gtk.main_quit()
+
 def PyNotification(title, text, picture_path=None, const=None,
                    callback=None, tooltip=None):
     if const == 'message-im':
@@ -36,4 +45,10 @@ def PyNotification(title, text, picture_path=None, const=None,
         title = Plus.msnplus_strip(title)
     notification = pynotify.Notification(title, text, picture_path)
     notification.set_hint_string("append", "allowed")
-    notification.show()
+    notification.set_category("presence.online")
+    notification.add_action("default", "Start Conversation", notifclick)
+
+    if not notification.show():
+        print "Failed to send notification"
+
+#    gtk.main()
